@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Through the Cut — A Panama Canal Story</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    <div id="loading-screen">
+      <div class="loading-content">
+        <h1>THROUGH THE CUT</h1>
+        <p class="subtitle">A Panama Canal Story</p>
+        <div class="loading-bar-wrap"><div id="loading-bar"></div></div>
+        <p id="loading-text">Loading history...</p>
+      </div>
+    </div>
+  </div>
+  <!-- Engine -->
+  <script src="src/engine/Input.js"></script>
+  <script src="src/engine/Camera.js"></script>
+  <script src="src/engine/Physics.js"></script>
+  <script src="src/engine/Renderer.js"></script>
+  <script src="src/engine/Sprites.js"></script>
+  <!-- Systems -->
+  <script src="src/systems/Dialogue.js"></script>
+  <script src="src/systems/Narration.js"></script>
+  <script src="src/systems/UI.js"></script>
+  <!-- Entities -->
+  <script src="src/entities/Entity.js"></script>
+  <script src="src/entities/Player.js"></script>
+  <script src="src/entities/NPC.js"></script>
+  <script src="src/entities/Platform.js"></script>
+  <script src="src/entities/Puzzles.js"></script>
+  <script src="src/entities/Hazard.js"></script>
+  <!-- Chapters -->
+  <script src="src/chapters/Chapter.js"></script>
+  <script src="src/chapters/Chapter1.js"></script>
+  <script src="src/chapters/Chapter2.js"></script>
+  <script src="src/chapters/Chapter3.js"></script>
+  <script src="src/chapters/Chapter4.js"></script>
+  <script src="src/chapters/Chapter5.js"></script>
+  <script src="src/chapters/Chapter6.js"></script>
+  <script src="src/chapters/Chapter7.js"></script>
+  <!-- Core -->
+  <script src="src/core/Game.js"></script>
+  <script src="src/core/main.js"></script>
+</body>
+</html>
