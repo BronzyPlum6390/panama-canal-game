@@ -1,0 +1,15 @@
+{
+  "name": "panama-canal-game",
+  "version": "1.0.0",
+  "description": "Through the Cut — a 2-player co-op HTML5 game about the Panama Canal",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.test.js"]
+  }
+}
