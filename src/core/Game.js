@@ -172,7 +172,7 @@ class Game {
           case 0: this._setState('playing'); break;
           case 1: this._restartChapter(); break;
           case 2: this.ui.showControls = !this.ui.showControls; break;
-          case 3: this._fadeOut(() => { this._setState('title'); this._teardownChapter(); }); break;
+          case 3: this._fadeOut(() => { this._teardownChapter(); this._setState('title'); this.ui.pauseSelected = 0; this.ui.titleAnimTime = 0; this._fadeIn(); }); break;
         }
       }
     } else if (this.state === 'chapter_complete') {

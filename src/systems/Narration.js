@@ -86,61 +86,61 @@ class NarrationSystem {
     ctx.fillStyle = '#050508';
     ctx.fillRect(0, 0, W, H);
 
-    // Decorative line
-    ctx.strokeStyle = '#C8A840';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(W * 0.1, H * 0.35);
-    ctx.lineTo(W * 0.9, H * 0.35);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(W * 0.1, H * 0.72);
-    ctx.lineTo(W * 0.9, H * 0.72);
-    ctx.stroke();
+    ctx.textAlign = 'center';
 
-    // Year label
+    // Year label — top section
     if (card.year) {
       ctx.fillStyle = '#C8A840';
       ctx.font = `bold 22px 'Courier New', monospace`;
-      ctx.textAlign = 'center';
-      ctx.fillText(card.year, W / 2, H * 0.3);
+      ctx.fillText(card.year, W / 2, H * 0.22);
     }
+
+    // Top decorative line
+    ctx.strokeStyle = '#C8A840';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(W * 0.1, H * 0.30);
+    ctx.lineTo(W * 0.9, H * 0.30);
+    ctx.stroke();
 
     // Chapter number
     if (card.chapterNum) {
       ctx.fillStyle = '#666';
       ctx.font = `12px 'Courier New', monospace`;
-      ctx.textAlign = 'center';
       ctx.fillText(`CHAPTER ${card.chapterNum}`, W / 2, H * 0.38);
     }
 
     // Title
     ctx.fillStyle = '#F0EAD0';
     ctx.font = `bold 22px 'Courier New', monospace`;
-    ctx.textAlign = 'center';
-    ctx.fillText(card.title || '', W / 2, H * 0.5);
+    ctx.fillText(card.title || '', W / 2, H * 0.50);
 
     // Subtitle
     if (card.subtitle) {
       ctx.fillStyle = '#A89060';
-      ctx.font = `10px 'Courier New', monospace`;
-      ctx.textAlign = 'center';
-      ctx.fillText(card.subtitle, W / 2, H * 0.58);
+      ctx.font = `11px 'Courier New', monospace`;
+      ctx.fillText(card.subtitle, W / 2, H * 0.59);
     }
 
-    // Body text
+    // Bottom decorative line — BELOW title section, ABOVE body
+    ctx.strokeStyle = '#C8A840';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(W * 0.1, H * 0.66);
+    ctx.lineTo(W * 0.9, H * 0.66);
+    ctx.stroke();
+
+    // Body text — clearly below the bottom line
     if (card.body) {
       ctx.fillStyle = '#888';
-      ctx.font = `12px 'Courier New', monospace`;
-      ctx.textAlign = 'center';
-      this._drawTextCentered(ctx, card.body, W / 2, H * 0.67, W * 0.7, 12);
+      ctx.font = `11px 'Courier New', monospace`;
+      this._drawTextCentered(ctx, card.body, W / 2, H * 0.73, W * 0.78, 15);
     }
 
     // Skip hint
     ctx.fillStyle = '#444';
     ctx.font = `11px 'Courier New', monospace`;
-    ctx.textAlign = 'center';
-    ctx.fillText('[F or Enter to continue]', W / 2, H - 12);
+    ctx.fillText('[F or Enter to continue]', W / 2, H - 10);
     ctx.textAlign = 'left';
   }
 
