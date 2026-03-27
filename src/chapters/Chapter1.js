@@ -106,6 +106,9 @@ class Chapter1 extends Chapter {
     this.addHazard(2000, G - 20, 80, 24,
       { type: 'mudslide', damage: 8, damageInterval: 0.3, warnLabel: 'MUD PIT' });
 
+    // Stepping stone above the mud — bridges the gap to the winch platform
+    this.addPlatform(2020, G - 80, 60, { texture: 'stone', color: '#5A5A40', oneWay: true });
+
     this.addPlatform(2100, G - 80, 80, { texture: 'stone', color: '#5A5A40' });
     this.addPlatform(2200, G - 50, 120, { texture: 'grass', color: '#3A2810' });
     this.addPlatform(2350, G - 30, 80, { texture: 'stone', color: '#5A5A40' });

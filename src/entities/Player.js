@@ -73,13 +73,16 @@ class Player extends Entity {
         this.body.vx *= Math.pow(f, dt * 60);
         if (Math.abs(this.body.vx) < 1) this.body.vx = 0;
       }
+    }
 
-      // Jump
+    // Jump — allowed even during hurt so players can escape hazards
+    if (this.state !== 'interact') {
       const canJump = (this.body.onGround || this.coyoteTimer > 0);
       if (canJump && this.jumpBufferTimer > 0) {
         this.body.vy = PHYSICS.JUMP_IMPULSE;
         this.coyoteTimer = 0;
         this.jumpBufferTimer = 0;
+        this.hurtTimer = 0; // cancel hurt lock so they can move after jumping out
       }
     }
 
