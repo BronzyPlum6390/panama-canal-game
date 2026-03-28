@@ -28,7 +28,10 @@ class Chapter1 extends Chapter {
           year: '1881',
           title: 'Le Grand Canal',
           subtitle: 'The French Dream',
+          title_es: 'Le Grand Canal',
+          subtitle_es: 'El Sueño Francés',
           body: 'Panama. The French canal company has arrived, led by Ferdinand de Lesseps — builder of the Suez Canal. He believes Panama is simply another engineering problem. He has never seen the jungle in rainy season.',
+          body_es: 'Panamá. La compañía francesa del canal ha llegado, liderada por Ferdinand de Lesseps — constructor del Canal de Suez. Él cree que Panamá es simplemente otro problema de ingeniería. Nunca ha visto la selva en temporada de lluvias.',
           duration: 7,
           skipOnInput: true,
         }
@@ -211,6 +214,7 @@ class Chapter1 extends Chapter {
         speakerId: 'de_lesseps',
         speakerName: 'Ferdinand de Lesseps',
         text: 'Ah, new workers! Welcome to the greatest engineering project in human history. By 1888 — seven short years — this jungle will be a canal, and France will be immortal.',
+        text_es: '¡Ah, nuevos trabajadores! Bienvenidos al proyecto de ingeniería más grande de la historia humana. Para 1888 — en siete cortos años — esta selva será un canal, y Francia será inmortal.',
         nextNodeId: 'de_lesseps_2',
       },
       {
@@ -219,6 +223,7 @@ class Chapter1 extends Chapter {
         speakerId: 'de_lesseps',
         speakerName: 'Ferdinand de Lesseps',
         text: 'I built the Suez in ten years. This is merely a 50-mile ditch. The science is sound. The investors are confident. What could possibly go wrong?',
+        text_es: 'Construí el Suez en diez años. Esto es apenas una zanja de 80 kilómetros. La ciencia es sólida. Los inversores tienen confianza. ¿Qué podría salir mal?',
         nextNodeId: 'de_lesseps_choice',
       },
       {
@@ -227,14 +232,17 @@ class Chapter1 extends Chapter {
         speakerId: 'rosa',
         speakerName: 'Rosa',
         text: 'How do you respond?',
+        text_es: '¿Cómo respondes?',
         choices: [
           {
             text: '"Monsieur, our people have lived here for generations. The jungle is not like Suez."',
+            text_es: '"Monsieur, nuestro pueblo ha vivido aquí por generaciones. La selva no es como el Suez."',
             nextNodeId: 'de_lesseps_warned',
             triggers: [{ type: 'set_flag', key: 'warned_de_lesseps' }],
           },
           {
             text: '"Oui, Monsieur. We will work hard."',
+            text_es: '"Oui, Monsieur. Trabajaremos duro."',
             nextNodeId: 'de_lesseps_pleased',
           },
         ],
@@ -245,6 +253,7 @@ class Chapter1 extends Chapter {
         speakerId: 'de_lesseps',
         speakerName: 'Ferdinand de Lesseps',
         text: '(laughs) You locals always say this. Do not worry — French engineering has conquered greater obstacles. Your concerns are... appreciated. Now get to work.',
+        text_es: '(ríe) Ustedes los locales siempre dicen esto. No se preocupen — la ingeniería francesa ha conquistado obstáculos mayores. Sus preocupaciones son... apreciadas. Ahora, al trabajo.',
         nextNodeId: null,
       },
       {
@@ -253,6 +262,7 @@ class Chapter1 extends Chapter {
         speakerId: 'de_lesseps',
         speakerName: 'Ferdinand de Lesseps',
         text: 'Excellent spirit! That is what I need. France depends on workers like you. Off you go.',
+        text_es: '¡Excelente espíritu! Eso es lo que necesito. Francia depende de trabajadores como ustedes. ¡Adelante!',
         nextNodeId: null,
       },
       // ── Farmer ─────────────────────────────────────────
@@ -262,6 +272,7 @@ class Chapter1 extends Chapter {
         speakerId: 'elder',
         speakerName: 'Panamanian Farmer',
         text: 'You see that cloud forming over the mountain? That means three days of rain. When it rains here, the Chagres River rises twenty feet in a night.',
+        text_es: '¿Ves esa nube que se forma sobre la montaña? Eso significa tres días de lluvia. Cuando llueve aquí, el río Chagres sube seis metros en una sola noche.',
         nextNodeId: 'farmer_2',
       },
       {
@@ -270,6 +281,7 @@ class Chapter1 extends Chapter {
         speakerId: 'elder',
         speakerName: 'Panamanian Farmer',
         text: 'I told the French engineers this. They wrote it in their notebooks and did nothing. My grandfather farmed this land. It will swallow whatever they build.',
+        text_es: 'Se lo dije a los ingenieros franceses. Lo anotaron en sus cuadernos y no hicieron nada. Mi abuelo cultivó esta tierra. Se tragará todo lo que construyan.',
         nextNodeId: 'farmer_3',
       },
       {
@@ -278,6 +290,7 @@ class Chapter1 extends Chapter {
         speakerId: 'elder',
         speakerName: 'Panamanian Farmer',
         text: 'And the mosquitoes... they say the sickness comes from bad air. But I have seen: the workers who sleep near the standing water die first. Every time.',
+        text_es: 'Y los mosquitos... dicen que la enfermedad viene del mal aire. Pero yo he visto: los trabajadores que duermen cerca del agua estancada mueren primero. Siempre.',
         nextNodeId: null,
       },
       // ── Sick Worker ────────────────────────────────────
@@ -287,6 +300,7 @@ class Chapter1 extends Chapter {
         speakerId: 'worker',
         speakerName: 'Sick Worker (1883)',
         text: '"I came from Barbados for a better wage. They promised good food and lodging. We sleep in tents above the mud. Every morning, two more men don\'t wake up."',
+        text_es: '"Vine de Barbados por un mejor salario. Prometieron buena comida y alojamiento. Dormimos en carpas sobre el barro. Cada mañana, dos hombres más no despiertan."',
         nextNodeId: 'sick_worker_2',
       },
       {
@@ -295,12 +309,14 @@ class Chapter1 extends Chapter {
         speakerId: 'worker',
         speakerName: 'Sick Worker (1883)',
         text: '"The French call it Panama Fever. They ship the bodies home in lead-lined boxes so no one in France will see how bad it is. My brother is in one of those boxes."',
+        text_es: '"Los franceses le llaman Fiebre de Panamá. Envían los cuerpos a casa en cajas forradas de plomo para que nadie en Francia vea lo grave que es. Mi hermano está en una de esas cajas."',
         nextNodeId: 'sick_worker_3',
       },
       {
         id: 'sick_worker_3',
         type: 'narration',
         text: 'During the French construction period (1881–1889), an estimated 22,000 workers died — primarily from yellow fever and malaria. The French suppressed death toll numbers to maintain investor confidence.',
+        text_es: 'Durante el período de construcción francés (1881–1889), se estima que murieron 22,000 trabajadores — principalmente de fiebre amarilla y malaria. Los franceses ocultaron las cifras de muertos para mantener la confianza de los inversores.',
         duration: 6,
         skipOnInput: true,
         nextNodeId: null,

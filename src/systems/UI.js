@@ -7,13 +7,13 @@ class UI {
     this.W = renderer.W;
     this.H = renderer.H;
     this.fadeAlpha = 0;
-    this.fadeDir = 0;  // -1 = fade out, 1 = fade in
+    this.fadeDir = 0;
     this.fadeSpeed = 1.5;
     this.fadeCallback = null;
     this.titleAnimTime = 0;
     this.pauseSelected = 0;
-    this.pauseOptions = ['RESUME', 'RESTART CHAPTER', 'CONTROLS', 'QUIT TO TITLE'];
     this.showControls = false;
+    // musicStyle / lang are owned by Game — pause menu reads them via options injected at draw time
   }
 
   update(dt) {
@@ -44,6 +44,7 @@ class UI {
   drawHUD(player1, player2, chapterTitle, chapterNum) {
     const ctx = this.r.ctx;
     const W = this.W, H = this.H;
+    const L = window.LANG;
 
     // Chapter indicator — centered top
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
@@ -60,12 +61,12 @@ class UI {
     // P2 HUD (top right)
     this._drawPlayerHUD(ctx, W - 110, 4, player2, 'P2 THOMAS', '#E0B040');
 
-    // Controls reminder (bottom) — slightly larger
+    // Controls reminder (bottom)
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.fillRect(4, H - 16, 230, 14);
+    ctx.fillRect(4, H - 16, 300, 14);
     ctx.fillStyle = '#666';
     ctx.font = `10px 'Courier New', monospace`;
-    ctx.fillText('P1: WASD+F   P2: ARROWS+ENTER   ESC: PAUSE', 8, H - 5);
+    ctx.fillText(L ? L.t('hud.controls') : 'P1: WASD+F   P2: ARROWS+ENTER   ESC: PAUSE', 8, H - 5);
   }
 
   _drawPlayerHUD(ctx, x, y, player, label, barColor) {
@@ -81,7 +82,6 @@ class UI {
     ctx.fillText(label, x + 4, y + 11);
 
     if (player) {
-      // Health bar — taller and more readable
       const hp = player.health / player.maxHealth;
       const BAR_X = x + 4, BAR_Y = y + 16, BAR_W = BW - 8, BAR_H = 9;
       ctx.fillStyle = '#222';
@@ -91,14 +91,12 @@ class UI {
       ctx.strokeStyle = '#666';
       ctx.lineWidth = 1;
       ctx.strokeRect(BAR_X, BAR_Y, BAR_W, BAR_H);
-      // HP label inside bar
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.font = `bold 8px 'Courier New', monospace`;
       ctx.textAlign = 'center';
       ctx.fillText(`${Math.ceil(player.health)}HP`, BAR_X + BAR_W / 2, BAR_Y + BAR_H - 1);
       ctx.textAlign = 'left';
 
-      // Interact hint
       if (player.nearInteractable) {
         ctx.fillStyle = '#E8C860';
         ctx.font = `10px 'Courier New', monospace`;
@@ -110,15 +108,14 @@ class UI {
   drawTitle(ctx) {
     const W = this.W, H = this.H;
     const t = this.titleAnimTime;
+    const L = window.LANG;
 
-    // Background
     ctx.fillStyle = '#050508';
     ctx.fillRect(0, 0, W, H);
 
     // Animated canal water
     ctx.fillStyle = '#1A4060';
     ctx.fillRect(0, H * 0.55, W, H * 0.45);
-    // Wave ripples
     ctx.strokeStyle = '#2A6080';
     ctx.lineWidth = 1;
     for (let i = 0; i < 5; i++) {
@@ -135,7 +132,6 @@ class UI {
     ctx.fillStyle = '#2A1A08';
     ctx.fillRect(W * 0.1, H * 0.3, 30, H * 0.35);
     ctx.fillRect(W * 0.82, H * 0.3, 30, H * 0.35);
-    // Gate doors
     ctx.fillStyle = '#1A0A00';
     ctx.fillRect(W * 0.1 + 30, H * 0.4, W * 0.36 - 5, 15);
     ctx.fillRect(W * 0.54 + 5, H * 0.4, W * 0.28 - 5, 15);
@@ -144,7 +140,6 @@ class UI {
     ctx.fillStyle = '#0A1A08';
     for (let i = 0; i < 12; i++) {
       const tx = (i / 12) * W;
-      const th = H * (0.25 + Math.sin(i * 1.7) * 0.15);
       ctx.beginPath();
       ctx.arc(tx + W / 24, H * 0.55, W / 20, 0, Math.PI, true);
       ctx.fill();
@@ -168,58 +163,77 @@ class UI {
     ctx.fillStyle = '#E8C860';
     ctx.font = `bold 28px 'Courier New', monospace`;
     ctx.textAlign = 'center';
-    ctx.fillText('THROUGH THE CUT', 0, 0);
+    ctx.fillText(L ? L.t('title.main') : 'THROUGH THE CUT', 0, 0);
 
     ctx.fillStyle = '#A89050';
     ctx.font = `13px 'Courier New', monospace`;
-    ctx.fillText('A PANAMA CANAL STORY', 0, 18);
+    ctx.fillText(L ? L.t('title.sub') : 'A PANAMA CANAL STORY', 0, 18);
     ctx.restore();
 
-    // Subtitle
+    // Bilingual subtitle line
+    if (L && L.lang === 'bilingual') {
+      ctx.fillStyle = '#7A6840';
+      ctx.font = `11px 'Courier New', monospace`;
+      ctx.textAlign = 'center';
+      ctx.fillText('A TRAVÉS DEL CORTE  /  UNA HISTORIA DEL CANAL DE PANAMÁ', W / 2, H * 0.32);
+    }
+
     ctx.fillStyle = '#7A6840';
     ctx.font = `12px 'Courier New', monospace`;
     ctx.textAlign = 'center';
-    ctx.fillText('1881 — 1999', W / 2, H * 0.38);
+    ctx.fillText(L ? L.t('title.years') : '1881 — 1999', W / 2, H * 0.38);
 
-    // Player setup note
     ctx.fillStyle = '#888';
     ctx.font = `11px 'Courier New', monospace`;
     ctx.textAlign = 'center';
-    ctx.fillText('A 2-PLAYER CO-OP STORY', W / 2, H * 0.75);
+    ctx.fillText(L ? L.t('title.coop') : 'A 2-PLAYER CO-OP STORY', W / 2, H * 0.75);
 
     ctx.fillStyle = '#556';
-    ctx.fillText('PLAYER 1: WASD + F      PLAYER 2: ARROWS + ENTER', W / 2, H * 0.8);
+    ctx.fillText(
+      (L ? L.t('title.p1ctrl') : 'PLAYER 1: WASD + F') + '      ' +
+      (L ? L.t('title.p2ctrl') : 'PLAYER 2: ARROWS + ENTER'),
+      W / 2, H * 0.8
+    );
 
-    // Blinking start prompt
     const blink = Math.floor(t * 2) % 2 === 0;
     if (blink) {
       ctx.fillStyle = '#C8A840';
       ctx.font = `13px 'Courier New', monospace`;
-      ctx.fillText('PRESS F OR ENTER TO BEGIN', W / 2, H * 0.88);
+      ctx.fillText(L ? L.t('title.start') : 'PRESS F OR ENTER TO BEGIN', W / 2, H * 0.88);
     }
 
     ctx.textAlign = 'left';
   }
 
-  // Draw-only version (called from _draw, no input handling)
-  drawPauseSimple(ctx) {
-    this._renderPauseMenu(ctx);
+  drawPauseSimple(ctx, musicStyle) {
+    this._renderPauseMenu(ctx, musicStyle);
   }
 
-  // Legacy method kept for compatibility
-  drawPause(ctx, selectedIdx, input) {
-    this._renderPauseMenu(ctx);
+  drawPause(ctx, selectedIdx, input, musicStyle) {
+    this._renderPauseMenu(ctx, musicStyle);
     return this.pauseSelected;
   }
 
-  _renderPauseMenu(ctx) {
+  _renderPauseMenu(ctx, musicStyle = 'western') {
     const W = this.W, H = this.H;
+    const L = window.LANG;
 
-    // Semi-transparent backdrop
+    const musicLabel = L ? L.t(`music.${musicStyle}`) : musicStyle.toUpperCase();
+    const langLabel  = L ? L.label : 'ENGLISH';
+
+    const opts = [
+      L ? L.t('pause.resume')   : 'RESUME',
+      L ? L.t('pause.restart')  : 'RESTART CHAPTER',
+      L ? L.t('pause.controls') : 'CONTROLS',
+      L ? L.t('pause.quit')     : 'QUIT TO TITLE',
+      `${L ? L.t('pause.music') : 'MUSIC'}: ${musicLabel}`,
+      `${L ? L.t('pause.lang')  : 'LANGUAGE'}: ${langLabel}`,
+    ];
+
     ctx.fillStyle = 'rgba(0,0,0,0.75)';
     ctx.fillRect(0, 0, W, H);
 
-    const BW = 200, BH = 140;
+    const BW = 220, BH = 190;
     const BX = (W - BW) / 2, BY = (H - BH) / 2;
 
     ctx.fillStyle = '#08080F';
@@ -233,24 +247,26 @@ class UI {
     ctx.fillStyle = '#E8C860';
     ctx.font = `bold 16px 'Courier New', monospace`;
     ctx.textAlign = 'center';
-    ctx.fillText('PAUSED', W / 2, BY + 20);
+    ctx.fillText(L ? L.t('pause.title') : 'PAUSED', W / 2, BY + 20);
 
-    this.pauseOptions.forEach((opt, i) => {
+    opts.forEach((opt, i) => {
       const oy = BY + 42 + i * 22;
       if (i === this.pauseSelected) {
         ctx.fillStyle = 'rgba(200,168,64,0.2)';
         ctx.fillRect(BX + 8, oy - 12, BW - 16, 16);
         ctx.fillStyle = '#FFE090';
+        ctx.font = `bold 11px 'Courier New', monospace`;
         ctx.fillText('▶ ' + opt, W / 2, oy);
       } else {
         ctx.fillStyle = '#888';
+        ctx.font = `11px 'Courier New', monospace`;
         ctx.fillText(opt, W / 2, oy);
       }
     });
 
-    ctx.font = `11px 'Courier New', monospace`;
+    ctx.font = `10px 'Courier New', monospace`;
     ctx.fillStyle = '#444';
-    ctx.fillText('↑↓ navigate  F/Enter select', W / 2, BY + BH - 8);
+    ctx.fillText(L ? L.t('pause.nav') : '↑↓ navigate  F/Enter select', W / 2, BY + BH - 8);
     ctx.textAlign = 'left';
 
     if (this.showControls) {
@@ -259,6 +275,7 @@ class UI {
   }
 
   _drawControls(ctx, W, H) {
+    const L = window.LANG;
     const BW = 260, BH = 120;
     const BX = (W - BW) / 2, BY = H * 0.1;
     ctx.fillStyle = '#050510';
@@ -269,13 +286,14 @@ class UI {
     ctx.fill();
     ctx.stroke();
 
+    const t = (k) => L ? L.t(k) : k;
     const controls = [
-      ['PLAYER 1 (ROSA)', 'PLAYER 2 (THOMAS)'],
-      ['A/D — Move Left/Right', 'LEFT/RIGHT — Move'],
-      ['W — Jump', 'UP — Jump'],
-      ['S — Crouch/Duck', 'DOWN — Crouch/Duck'],
-      ['F — Interact / Use', 'Enter — Interact / Use'],
-      ['ESC — Pause', ''],
+      [t('ctrl.p1'),      t('ctrl.p2')],
+      [t('ctrl.movelr'),  t('ctrl.arrows')],
+      [t('ctrl.jump'),    t('ctrl.up')],
+      [t('ctrl.duck'),    t('ctrl.down')],
+      [t('ctrl.interact'),t('ctrl.enter')],
+      [t('ctrl.esc'),     ''],
     ];
 
     ctx.font = `11px 'Courier New', monospace`;
@@ -299,7 +317,6 @@ class UI {
   }
 
   drawCoopIndicator(ctx, x, y, label, active, progress) {
-    // Shows a co-op puzzle progress indicator near the puzzle object
     const W = 80, H = 12;
     const BX = x - W / 2, BY = y - H - 4;
     ctx.fillStyle = 'rgba(0,0,0,0.7)';
@@ -320,29 +337,52 @@ class UI {
 
   drawChapterComplete(ctx, chapter, nextChapter) {
     const W = this.W, H = this.H;
+    const L = window.LANG;
+    const es = L ? L.chapterEs(chapter.id) : {};
     ctx.fillStyle = 'rgba(0,0,0,0.85)';
     ctx.fillRect(0, 0, W, H);
 
     ctx.fillStyle = '#E8C860';
     ctx.font = `bold 16px 'Courier New', monospace`;
     ctx.textAlign = 'center';
-    ctx.fillText('CHAPTER COMPLETE', W / 2, H * 0.35);
+    ctx.fillText(L ? L.t('ch.complete') : 'CHAPTER COMPLETE', W / 2, H * 0.32);
 
-    ctx.fillStyle = '#A89060';
-    ctx.font = `13px 'Courier New', monospace`;
-    ctx.fillText(chapter.title || '', W / 2, H * 0.45);
+    // Chapter title — bilingual
+    const titleEn = chapter.title || '';
+    const titleEs = es.title_es || '';
+    if (L && L.lang === 'bilingual' && titleEs) {
+      ctx.fillStyle = '#A89060';
+      ctx.font = `13px 'Courier New', monospace`;
+      ctx.fillText(titleEn, W / 2, H * 0.42);
+      ctx.fillStyle = '#8A7040';
+      ctx.font = `12px 'Courier New', monospace`;
+      ctx.fillText(titleEs, W / 2, H * 0.49);
+    } else {
+      ctx.fillStyle = '#A89060';
+      ctx.font = `13px 'Courier New', monospace`;
+      ctx.fillText(L && L.lang === 'es' && titleEs ? titleEs : titleEn, W / 2, H * 0.44);
+    }
 
-    if (chapter.footnote) {
+    // Footnote
+    const footnoteEn = chapter.footnote || '';
+    const footnoteEs = es.footnote_es || '';
+    const footnoteText = L && L.lang === 'es' && footnoteEs ? footnoteEs : footnoteEn;
+    if (footnoteText) {
       ctx.fillStyle = '#888';
       ctx.font = `11px 'Courier New', monospace`;
-      this._drawTextCentered(ctx, chapter.footnote, W / 2, H * 0.55, W * 0.75, 11);
+      this._drawTextCentered(ctx, footnoteText, W / 2, H * 0.54, W * 0.75, 11);
+      if (L && L.lang === 'bilingual' && footnoteEs && footnoteEn !== footnoteEs) {
+        ctx.fillStyle = '#666';
+        ctx.font = `10px 'Courier New', monospace`;
+        this._drawTextCentered(ctx, footnoteEs, W / 2, H * 0.64, W * 0.75, 10);
+      }
     }
 
     const blink = Math.floor(this.titleAnimTime * 2) % 2 === 0;
     if (blink) {
       ctx.fillStyle = '#C8A840';
       ctx.font = `12px 'Courier New', monospace`;
-      ctx.fillText('[F/Enter] Continue', W / 2, H * 0.8);
+      ctx.fillText(L ? L.t('ch.continue') : '[F/Enter] Continue', W / 2, H * 0.83);
     }
     ctx.textAlign = 'left';
   }

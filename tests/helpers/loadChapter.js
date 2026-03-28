@@ -50,6 +50,8 @@ function makeContext() {
     DialogueRenderer: class { constructor(){} },
     NarrationSystem: class { constructor(){} active=false; update(){} draw(){} push(){} },
     UI: class { constructor(){} },
+    // Lang stub — t() returns key, no translations needed for structural tests
+    LANG: { lang: 'en', t: (k) => k, txt: (en) => en, txt2: () => null, chapterEs: () => ({}) },
   };
 
   vm.createContext(ctx);

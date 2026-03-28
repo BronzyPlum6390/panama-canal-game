@@ -212,10 +212,30 @@ class DialogueRenderer {
     }
 
     // Dialogue text
+    const L = window.LANG;
+    const isBilingual = L && L.lang === 'bilingual';
+    const isEs        = L && L.lang === 'es';
+
+    // Pick primary language text
+    let displayText = dialogue.typedText;
+    if (isEs && node.text_es) {
+      // For ES mode, type the Spanish text directly via typedText on the node
+      // (simple fallback: show typedText but if full text is ES node, show Spanish)
+      displayText = dialogue.typedText; // still typed-effect text
+    }
+
     ctx.fillStyle = '#F0EAD0';
     ctx.font = `13px 'Courier New', monospace`;
     const textY = dialogue.speakerName ? BOX_Y + 36 : BOX_Y + 22;
-    this._drawWrappedText(ctx, dialogue.typedText, textX, textY, maxTextW, 17);
+    const linesUsed = this._drawWrappedText(ctx, displayText, textX, textY, maxTextW, 17);
+
+    // Bilingual: show Spanish translation below (static, no typing effect)
+    if (isBilingual && node.text_es && dialogue.typeFinished) {
+      ctx.fillStyle = '#9A8860';
+      ctx.font = `11px 'Courier New', monospace`;
+      const esY = textY + linesUsed * 17 + 4;
+      this._drawWrappedText(ctx, node.text_es, textX, esY, maxTextW, 14);
+    }
 
     // Choices
     if (node.type === 'choice' && dialogue.typeFinished) {
@@ -227,8 +247,16 @@ class DialogueRenderer {
           ctx.fillText('▶', textX - 10, choiceY);
         }
         ctx.fillStyle = i === dialogue.selectedChoice ? '#FFE090' : '#A89860';
-        const linesDrawn = this._drawWrappedText(ctx, ch.text, textX, choiceY, maxTextW, 16);
+        const choiceText = isEs && ch.text_es ? ch.text_es : ch.text;
+        const linesDrawn = this._drawWrappedText(ctx, choiceText, textX, choiceY, maxTextW, 16);
         choiceY += linesDrawn * 16 + 4;
+        if (isBilingual && ch.text_es) {
+          ctx.fillStyle = '#7A6840';
+          ctx.font = `10px 'Courier New', monospace`;
+          const es2Lines = this._drawWrappedText(ctx, ch.text_es, textX, choiceY, maxTextW, 13);
+          choiceY += es2Lines * 13 + 2;
+          ctx.font = `12px 'Courier New', monospace`;
+        }
       });
     }
 

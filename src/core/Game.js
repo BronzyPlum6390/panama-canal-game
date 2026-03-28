@@ -31,6 +31,7 @@ class Game {
     this.dialogueRenderer = new DialogueRenderer(this.renderer);
     this.narration = new NarrationSystem();
     this.ui = new UI(this.renderer);
+    this.music = new MusicSystem();
 
     // Players
     this.player1 = null;
@@ -48,6 +49,13 @@ class Game {
     // Sign/collectible popup
     this._popup = null;
     this._popupTimer = 0;
+
+    // Mute hint overlay
+    this._muteHint = null;
+    this._muteHintTimer = 0;
+
+    // Music style: 'western' | 'latin' | 'off'
+    this.musicStyle = 'western';
 
     // Expose globally for puzzle access
     window._game = this;
@@ -69,11 +77,15 @@ class Game {
     this._resize();
     window.addEventListener('resize', () => this._resize());
 
-    // ESC = pause
+    // ESC = pause, M = mute music
     window.addEventListener('keydown', e => {
       if (e.code === 'Escape' && (this.state === 'playing' || this.state === 'paused')) {
         if (this.state === 'playing') this._setState('paused');
         else if (this.state === 'paused') this._setState('playing');
+      }
+      if (e.code === 'KeyM') {
+        const muted = this.music.toggleMute();
+        this._showMuteHint(muted);
       }
     });
 
@@ -103,6 +115,7 @@ class Game {
             if (screen) screen.style.display = 'none';
           }, 800);
           this._setState('title');
+          this.music.play('title');
           this._startLoop();
         }, 600);
       }
@@ -146,6 +159,9 @@ class Game {
       if (this._popupTimer <= 0) this._popup = null;
     }
 
+    // Mute hint timer
+    if (this._muteHintTimer > 0) this._muteHintTimer -= dt;
+
     if (this.state === 'title') {
       this.ui.titleAnimTime += dt;
       if (this.input.p1.justAction || this.input.p2.justAction || this.input.anyKey) {
@@ -165,14 +181,16 @@ class Game {
         this.ui.pauseSelected = Math.max(0, this.ui.pauseSelected - 1);
       }
       if (this.input.p1.justDown || this.input.p2.justDown) {
-        this.ui.pauseSelected = Math.min(this.ui.pauseOptions.length - 1, this.ui.pauseSelected + 1);
+        this.ui.pauseSelected = Math.min(5, this.ui.pauseSelected + 1);
       }
       if (this.input.p1.justAction || this.input.p2.justAction) {
         switch (this.ui.pauseSelected) {
           case 0: this._setState('playing'); break;
           case 1: this._restartChapter(); break;
           case 2: this.ui.showControls = !this.ui.showControls; break;
-          case 3: this._fadeOut(() => { this._teardownChapter(); this._setState('title'); this.ui.pauseSelected = 0; this.ui.titleAnimTime = 0; this._fadeIn(); }); break;
+          case 3: this._fadeOut(() => { this._teardownChapter(); this._setState('title'); this.ui.pauseSelected = 0; this.ui.titleAnimTime = 0; this.music.play('title'); this._fadeIn(); }); break;
+          case 4: this._cycleMusicStyle(); break;
+          case 5: this._cycleLang(); break;
         }
       }
     } else if (this.state === 'chapter_complete') {
@@ -264,6 +282,12 @@ class Game {
 
     this._teardownChapter();
     this.chapter = this.chapters[idx];
+
+    // Select era-appropriate music based on style preference
+    if (this.musicStyle !== 'off') {
+      const base = idx < 3 ? 'french' : 'american';
+      this.music.play(this.musicStyle === 'latin' ? 'latin' : base);
+    }
 
     // Build level
     this.chapter.build(this.physics);
@@ -378,7 +402,7 @@ class Game {
       this._drawGame();
 
       if (this.state === 'paused') {
-        this.ui.drawPauseSimple(ctx);
+        this.ui.drawPauseSimple(ctx, this.musicStyle);
       } else if (this.state === 'chapter_complete') {
         this.ui.drawChapterComplete(ctx, this.chapter, this.chapters[this.currentChapterIdx + 1]);
         this.ui.titleAnimTime += 0.016;
@@ -395,6 +419,21 @@ class Game {
     // Popup
     if (this._popup && this._popupTimer > 0) {
       this._drawPopup(ctx);
+    }
+
+    // Mute hint
+    if (this._muteHint && this._muteHintTimer > 0) {
+      const alpha = Math.min(1, this._muteHintTimer / 0.4);
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(this.W - 90, 6, 84, 16);
+      ctx.fillStyle = '#C8A840';
+      ctx.font = `bold 10px 'Courier New', monospace`;
+      ctx.textAlign = 'right';
+      ctx.fillText(this._muteHint, this.W - 8, 17);
+      ctx.textAlign = 'left';
+      ctx.restore();
     }
 
     // Fade overlay
@@ -560,6 +599,30 @@ class Game {
       }
     }
     if (line) ctx.fillText(line, cx, curY);
+  }
+
+  _showMuteHint(muted) {
+    this._muteHint = muted ? 'MUSIC OFF' : 'MUSIC ON';
+    this._muteHintTimer = 2.0;
+  }
+
+  _cycleMusicStyle() {
+    const order = ['western', 'latin', 'off'];
+    const i = order.indexOf(this.musicStyle);
+    this.musicStyle = order[(i + 1) % order.length];
+    if (this.musicStyle === 'off') {
+      this.music.stop();
+    } else {
+      const base = this.currentChapterIdx < 3 ? 'french' : 'american';
+      const track = this.musicStyle === 'latin' ? 'latin' : base;
+      // Force restart even if same track id by clearing first
+      this.music._trackId = null;
+      this.music.play(track);
+    }
+  }
+
+  _cycleLang() {
+    if (window.LANG) window.LANG.cycle();
   }
 
   _resize() {

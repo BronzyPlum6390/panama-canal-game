@@ -82,6 +82,10 @@ class NarrationSystem {
   }
 
   _drawChapterCard(ctx, card, W, H) {
+    const L = window.LANG;
+    const isEs  = L && L.lang === 'es';
+    const isBi  = L && L.lang === 'bilingual';
+
     // Full black screen with chapter info
     ctx.fillStyle = '#050508';
     ctx.fillRect(0, 0, W, H);
@@ -107,22 +111,40 @@ class NarrationSystem {
     if (card.chapterNum) {
       ctx.fillStyle = '#666';
       ctx.font = `12px 'Courier New', monospace`;
-      ctx.fillText(`CHAPTER ${card.chapterNum}`, W / 2, H * 0.38);
+      const chapLabel = L ? L.t('narr.chapter') : 'CHAPTER';
+      ctx.fillText(`${chapLabel} ${card.chapterNum}`, W / 2, H * 0.38);
     }
 
-    // Title
+    // Title — primary language
+    const titleEn = card.title || '';
+    const titleEs = card.title_es || titleEn;
     ctx.fillStyle = '#F0EAD0';
     ctx.font = `bold 22px 'Courier New', monospace`;
-    ctx.fillText(card.title || '', W / 2, H * 0.50);
+    ctx.fillText(isEs ? titleEs : titleEn, W / 2, H * 0.50);
 
-    // Subtitle
-    if (card.subtitle) {
+    // Bilingual secondary title
+    if (isBi && titleEs && titleEs !== titleEn) {
       ctx.fillStyle = '#A89060';
-      ctx.font = `11px 'Courier New', monospace`;
-      ctx.fillText(card.subtitle, W / 2, H * 0.59);
+      ctx.font = `bold 14px 'Courier New', monospace`;
+      ctx.fillText(titleEs, W / 2, H * 0.56);
     }
 
-    // Bottom decorative line — BELOW title section, ABOVE body
+    // Subtitle
+    const subtitleEn = card.subtitle || '';
+    const subtitleEs = card.subtitle_es || subtitleEn;
+    if (subtitleEn || subtitleEs) {
+      const subtitleY = isBi && titleEs !== titleEn ? H * 0.60 : H * 0.59;
+      ctx.fillStyle = '#A89060';
+      ctx.font = `11px 'Courier New', monospace`;
+      ctx.fillText(isEs ? subtitleEs : subtitleEn, W / 2, subtitleY);
+      if (isBi && subtitleEs && subtitleEs !== subtitleEn) {
+        ctx.fillStyle = '#8A7040';
+        ctx.font = `10px 'Courier New', monospace`;
+        ctx.fillText(subtitleEs, W / 2, subtitleY + 11);
+      }
+    }
+
+    // Bottom decorative line
     ctx.strokeStyle = '#C8A840';
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -130,17 +152,26 @@ class NarrationSystem {
     ctx.lineTo(W * 0.9, H * 0.66);
     ctx.stroke();
 
-    // Body text — clearly below the bottom line
-    if (card.body) {
+    // Body text
+    const bodyEn = card.body || '';
+    const bodyEs = card.body_es || '';
+    if (bodyEn || bodyEs) {
       ctx.fillStyle = '#888';
       ctx.font = `11px 'Courier New', monospace`;
-      this._drawTextCentered(ctx, card.body, W / 2, H * 0.73, W * 0.78, 15);
+      const primaryBody = isEs && bodyEs ? bodyEs : bodyEn;
+      this._drawTextCentered(ctx, primaryBody, W / 2, H * 0.73, W * 0.78, 15);
+      if (isBi && bodyEs && bodyEs !== bodyEn) {
+        ctx.fillStyle = '#666';
+        ctx.font = `10px 'Courier New', monospace`;
+        // Secondary body renders below — give it 3 lines of space from primary
+        this._drawTextCentered(ctx, bodyEs, W / 2, H * 0.82, W * 0.78, 12);
+      }
     }
 
     // Skip hint
     ctx.fillStyle = '#444';
     ctx.font = `11px 'Courier New', monospace`;
-    ctx.fillText('[F or Enter to continue]', W / 2, H - 10);
+    ctx.fillText(L ? L.t('narr.skip') : '[F or Enter to continue]', W / 2, H - 10);
     ctx.textAlign = 'left';
   }
 
@@ -176,7 +207,8 @@ class NarrationSystem {
     ctx.fillStyle = '#C8A840';
     ctx.font = `bold 11px 'Courier New', monospace`;
     ctx.textAlign = 'center';
-    ctx.fillText('HISTORICAL NOTE', W / 2, BY + 11);
+    const histLabel = window.LANG ? window.LANG.t('narr.hist') : 'HISTORICAL NOTE';
+    ctx.fillText(histLabel, W / 2, BY + 11);
 
     ctx.fillStyle = '#D0C8A0';
     ctx.font = `11px 'Courier New', monospace`;
