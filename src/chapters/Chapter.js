@@ -37,7 +37,7 @@ class Chapter {
 
     this.complete = false;
     this.completionTimer = 0;
-    this.COMPLETION_DELAY = 2;
+    this.COMPLETION_DELAY = 0.5;
 
     this.introCards = config.introCards || [];
     this.introShown = false;
@@ -105,7 +105,8 @@ class Chapter {
       if (this.exitCondition === 'reach_end') {
         let allNear = true;
         for (const p of players) {
-          if (p.body.x < this.exitX) { allNear = false; break; }
+          // Use player center so they don't need to walk past the portal edge
+          if (p.body.cx < this.exitX) { allNear = false; break; }
         }
         if (allNear) this._triggerExit();
       }
@@ -168,21 +169,23 @@ class Chapter {
   _drawExit(ctx, camera) {
     if (this.exitCondition !== 'reach_end') return;
     const { sx, sy } = camera.worldToScreen(this.exitX, this.groundY - 80);
-    // Glowing exit portal
-    const pulse = 0.7 + Math.sin(Date.now() * 0.003) * 0.3;
-    ctx.fillStyle = `rgba(200,168,64,${pulse * 0.3})`;
+    // Pulse faster and brighter once triggered
+    const speed = this.exitTriggered ? 0.015 : 0.003;
+    const pulse = 0.7 + Math.sin(Date.now() * speed) * 0.3;
+    const brightness = this.exitTriggered ? 1.0 : pulse;
+    ctx.fillStyle = `rgba(200,168,64,${brightness * 0.4})`;
+    ctx.beginPath();
+    ctx.arc(sx + 16, sy + 40, 34, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = `rgba(200,168,64,${brightness})`;
+    ctx.lineWidth = this.exitTriggered ? 3 : 2;
     ctx.beginPath();
     ctx.arc(sx + 16, sy + 40, 30, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = `rgba(200,168,64,${pulse})`;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(sx + 16, sy + 40, 28, 0, Math.PI * 2);
     ctx.stroke();
-    ctx.fillStyle = `rgba(200,168,64,${pulse})`;
+    ctx.fillStyle = `rgba(200,168,64,${brightness})`;
     ctx.font = `7px 'Courier New', monospace`;
     ctx.textAlign = 'center';
-    ctx.fillText('→ CONTINUE', sx + 16, sy - 2);
+    ctx.fillText(this.exitTriggered ? '✓ LOADING...' : '→ CONTINUE', sx + 16, sy - 2);
     ctx.textAlign = 'left';
   }
 

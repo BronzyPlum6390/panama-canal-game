@@ -194,7 +194,7 @@ class Game {
         }
       }
     } else if (this.state === 'chapter_complete') {
-      if (this.input.p1.justAction || this.input.p2.justAction) {
+      if (this.input.p1.justAction || this.input.p2.justAction || this.input.anyKey) {
         this._nextChapter();
       }
     } else if (this.state === 'game_complete') {
